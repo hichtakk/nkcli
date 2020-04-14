@@ -1,77 +1,11 @@
-#!/usr/bin/env python3
-
 import re
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
-#from urllib.parse import urlencode
-#from http.cookiejar import CookieJar
 
 from bs4 import BeautifulSoup
-import click
 
-
-@click.group()
-def rootCmd():
-    pass
-
-
-@rootCmd.command()
-@click.argument("horse_id")
-def info(horse_id):
-    scraper = Scraper()
-    horse = scraper.get_horse(horse_id)
-    horse.info()
-
-
-@rootCmd.command()
-@click.argument("horse_id")
-def pedigree(horse_id):
-    scraper = Scraper()
-    pedigree = scraper.get_pedigree(horse_id)
-    pedigree.print()
-
-
-@rootCmd.command()
-@click.argument("cookie")
-def favorite(cookie):
-    scraper = Scraper()
-    user_id = scraper.cookie_to_id(cookie)
-    scraper.user_favorite(user_id)
-
-"""
-@rootCmd.command()
-def sire_ranking():
-    print("sire-ranking")
-"""
-
-COLOR = {
-    "bay": "鹿毛",
-    "dark bay": "黒鹿毛",
-    "brown": "青鹿毛",
-    "black": "青毛",
-    "chestnut": "栗毛",
-    "liver chestnut": "栃栗毛",
-    "gray": "芦毛",
-    "white": "白毛"
-}
-
-SEX = {
-    "stallion": "牡",
-    "mare": "牝",
-    "gelding": "セ"
-}
-
-
-def get_en_color(ja_color):
-    if ja_color == None:
-        return "unknown"
-    color = [e for e, j in COLOR.items() if j == ja_color][0]
-    return color
-
-
-def get_en_sex(ja_sex):
-    color = [e for e, j in SEX.items() if j == ja_sex][0]
-    return color
+from nkcli.horse import Horse, Pedigree
+from nkcli.constants import get_en_color, get_en_sex
 
 
 class Scraper(object):
@@ -199,49 +133,3 @@ class Scraper(object):
         user_id = avator.get("src").split("/")[-2]
 
         return user_id
-
-
-class Horse(object):
-    netkeiba_id = 0
-    name = "name"
-    sex = "stalion_or_mare"
-    foaled = "YYYY"
-    color = ""
-    record = ""
-    earnings = ""
-    retired = True
-
-    def __init__(self, id_):
-        self.netkeiba_id = id_
-
-    def info(self):
-        print("ID:       ", self.netkeiba_id)
-        print("Name:     ", self.name)
-        print("Retired:  ", self.retired)
-        print("Sex:      ", self.sex)
-        print("Foaled:   ", self.foaled)
-        print("Color:    ", self.color)
-        print("Record:   ", self.record)
-        print("Earnings: ", self.earnings)
-
-
-class Pedigree(object):
-
-    def __init__(self, sire, dam):
-        self.sire = sire
-        self.dam = dam
-
-    def print(self):
-        if self.sire["international_name"] != "":
-            print("Sire: {} {} ({})".format(self.sire["id"], self.sire["name"], self.sire["international_name"]))
-        else:
-            print("Sire: {} {}".format(self.sire["id"], self.sire["name"]))
-
-        if self.dam["international_name"] != "":
-            print("Dam:  {} {} ({})".format(self.dam["id"], self.dam["name"], self.dam["international_name"]))
-        else:
-            print("Dam:  {} {}".format(self.dam["id"], self.dam["name"]))
-
-
-if __name__ == '__main__':
-    rootCmd()
