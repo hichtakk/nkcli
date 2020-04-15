@@ -1,4 +1,4 @@
-from nkcli.console.cmd import rootCmd
+from nkcli.console.cmd import root as run
 
 def main():
-    rootCmd()
+    run()

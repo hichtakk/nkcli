@@ -15,6 +15,7 @@ SEX = {
     "gelding": "セ"
 }
 
+
 def get_en_color(ja_color):
     if ja_color == None:
         return "unknown"

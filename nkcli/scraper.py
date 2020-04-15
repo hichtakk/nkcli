@@ -56,7 +56,10 @@ class Scraper(object):
         profile = soup.find("div", class_="db_prof_area_02")
         foaled = profile.find("th", text="生年月日").parent.find("td").text.strip()
         m = re.search(r"^(?P<year>\d{4}).*", foaled)
-        foaled = int(m.group("year"))
+        if m:
+            foaled = int(m.group("year"))
+        else:
+            foaled = 0
         record = profile.find("th", text="通算成績").parent.find("td").find("a").text
         earnings = profile.find("th", text="獲得賞金").parent.find("td").text.strip()
 
@@ -70,6 +73,8 @@ class Scraper(object):
         horse.earnings = earnings
         if status == "現役":
             horse.retired = False
+        else:
+            horse.retired = True
 
         return horse
 
@@ -81,7 +86,7 @@ class Scraper(object):
         pedigree = soup.find("table", class_="blood_table")
         sire = pedigree.find("td", rowspan=16, class_="b_ml")
         dam =  pedigree.find("td", rowspan=16, class_="b_fml")
-        if sire.text.strip() != "":
+        if sire.text.strip() != "" and sire.a:
             sire_name = sire.a.text.strip()
             sire_id = sire.a.get("href").strip("/").lstrip("horse/")
         else:
@@ -113,6 +118,7 @@ class Scraper(object):
         pedigree = Pedigree(sire_dict, dam_dict)
 
         return pedigree
+
 
     def user_favorite(self, user_id):
         url = "https://user.netkeiba.com/?pid=user_horse&id={}".format(user_id)
