@@ -29,6 +29,7 @@ def info(horse_id):
         session.add(horse)
         session.commit()
     horse.print()
+
     if horse.sire:
         try:
             sire = session.query(Horse).filter(Horse.netkeiba_id == horse.sire).one()
@@ -41,6 +42,7 @@ def info(horse_id):
             session.add(sire)
             session.commit()
         print("Sire:     ", sire.name, "/", sire.netkeiba_id)
+
     if horse.dam:
         try:
             dam = session.query(Horse).filter(Horse.netkeiba_id == horse.dam).one()
@@ -70,6 +72,7 @@ def favorite(user_id, cookie=None):
     if cookie != None:
         user_id = scraper.cookie_to_id(cookie)
     scraper.user_favorite(user_id)
+
 
 """
 @root.command()
